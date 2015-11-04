@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <title>Mininet Cheatsheet - nixBlog</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" />
+    <!--<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet" />-->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="http://surfer2047.github.io/theme/style.css" rel="stylesheet" />
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body id="index" class="archive">
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://surfer2047.github.io">nixBlog</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-right">
+          <ul class="nav navbar-nav">
+            <li><a href="http://surfer2047.github.io/pages/about-me.html">About Me</a></li>
+            <li><a href="http://surfer2047.github.io/tags.html">tags</a></li>
+          </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+      </div>
+    </nav>
+    <div class="container">
+    <section id="content" class="article content">
+      <header>
+        <h2 class="entry-title">
+          Mininet Cheatsheet
+        </h2>
+        
+        <div class="text-muted">बुध  04 नवम्बर 2015</div>
+      </header>
+<!-- .entry-content -->
+      <div class="entry-content">
+        <h1>Mininet installation testing</h1>
+<div class="highlight"><pre><span class="nv">$ </span>sudo mn --test pingall
+<span class="nv">$ </span>sudo mn --test pingpair
+</pre></div>
+
+
+<p>for the documentation help</p>
+<div class="highlight"><pre>mn --help
+</pre></div>
+
+
+<h2>some basic commands in mininet</h2>
+<div class="highlight"><pre>mn&gt; <span class="nb">help</span>  <span class="c">#Display some help commands</span>
+mn&gt; nodes <span class="c">#Display all the nodes controller, switch and hosts of the topology</span>
+mn&gt; h2 ping h1 <span class="c">#Ping h1 form h2</span>
+mn&gt; h2 ifconfig <span class="c">#Display the ip configuration of h2 host with h2-eth0</span>
+mn&gt; xterm h2  <span class="c">#Connect to the terminal of h2 host, where we can run all the commands</span>
+mn&gt; dump <span class="c">#Display all the information about the nodes</span>
+mn&gt; s1 ifconfig <span class="c">#This will display all the physical interface of host as well as the logical interface of the switch</span>
+mn&gt; s1 ping 8.8.8.8 <span class="c">#This will ping the Google public dns from the switch</span>
+mn&gt; c0 ping -c <span class="m">2</span> 8.8.4.4
+mn&gt; pingall <span class="c">#This will ping two nodes in topology h1 and h2</span>
+mn&gt; net <span class="c">#Show the links connection.</span>
+</pre></div>
+
+
+<p>In mininet switch by default run as the root namespace, so it can has access to all the network interface of the physical host system.</p>
+<p>In mininet it is possible to place all the hosts, switch, controller into their own namespace, using the flag <code>--innamespace</code> option.</p>
+<p>In mininet the network is only virtualize, all the nodes in the mininet network share the same process, this can be verify using ps the commands on all nodes</p>
+<div class="highlight"><pre>mn&gt; h1 ps -a 
+mn&gt; h2 ps -a 
+mn&gt; c0 ps -a 
+mn&gt; s1 ps -a 
+</pre></div>
+
+
+<p>On running the above command, the output will be the same, even on listing the files on each nodes will result in same info.</p>
+<p>The real advantage of using mininet comes, each host on mininet can run any linux command that support by your hosts on which mininet is running. we can also run webserver in hosts.</p>
+<p>Let us run simple web server in host h2 inside mininet topology.</p>
+<div class="highlight"><pre><span class="nv">$ </span>h1 python -m SimpleHTTPServer <span class="m">999</span> <span class="p">&amp;</span> 
+</pre></div>
+
+
+<p>The above command will run the simple HTTP webserver available in our linux system to the host h1, you can get the ip address of the host h1 by running the command <code>dump</code> 
+To connect to the webserver running in host </p>
+<div class="highlight"><pre><span class="nv">$ </span>h1 wget 10.0.0.1:999 -O data
+</pre></div>
+
+
+<p>If mininet crashes some reason, we need to clean up </p>
+<div class="highlight"><pre>mn&gt; <span class="nb">exit</span>
+<span class="nv">$ </span>sudo mn -c 
+</pre></div>
+
+
+<div class="highlight"><pre>sudo mn --test pingpair
+</pre></div>
+
+
+<p>The above test is called the regression test in mininet.</p>
+<div class="highlight"><pre><span class="nv">$ </span>sudo mn --test iperf
+</pre></div>
+
+
+<p>The above command create the same minimalist topology and run the iperf server on h1 and run iperf</p>
+<p>Ok, let us write some python code </p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">mininet.net</span> <span class="kn">import</span> <span class="n">Mininet</span>
+<span class="kn">from</span> <span class="nn">mininet.topolib</span> <span class="kn">import</span> <span class="n">TreeTopo</span>
+
+<span class="n">tree4</span> <span class="o">=</span> <span class="n">TreeTopo</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">fanout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">netwok</span> <span class="o">=</span> <span class="n">Mininet</span><span class="p">(</span><span class="n">topo</span><span class="o">=</span><span class="n">tree4</span><span class="p">)</span>
+<span class="n">netwok</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">h1</span><span class="p">,</span> <span class="n">h4</span> <span class="o">=</span> <span class="n">netwok</span><span class="o">.</span><span class="n">hosts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">network</span><span class="o">.</span><span class="n">hosts</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">h1</span><span class="o">.</span><span class="n">cmd</span><span class="p">(</span><span class="s">&quot;pinging h1 from h4 </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="n">h4</span><span class="o">.</span><span class="n">IP</span><span class="p">())</span>
+<span class="n">network</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+
+
+<p>save the above code and run this as <code>python &lt;file_name&gt;</code>. This method is to creating the topology from python file</p>
+<p>Ok, new let us create the topology from command line</p>
+<div class="highlight"><pre><span class="err">$</span> <span class="n">sudo</span> <span class="n">mn</span> <span class="o">--</span><span class="n">topo</span> <span class="n">linear</span><span class="p">,</span><span class="mi">3</span>
+</pre></div>
+
+
+<p>This above command will create the linear topology, 3 switches are connected with each other having single host.</p>
+<div class="highlight"><pre><span class="err">$</span><span class="n">sudo</span> <span class="n">mn</span> <span class="o">--</span><span class="n">topo</span> <span class="n">single</span><span class="p">,</span><span class="mi">3</span>
+</pre></div>
+
+
+<p>The above command will create a single switch with 3 hosts connected to the switch</p>
+<h2>Setting up the link parameters in mininet.</h2>
+<div class="highlight"><pre><span class="err">$</span><span class="n">sudo</span> <span class="n">mn</span> <span class="o">--</span><span class="n">link</span> <span class="n">tc</span><span class="p">,</span><span class="n">bw</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">delay</span><span class="o">=</span><span class="mi">10</span><span class="n">ms</span>
+</pre></div>
+
+
+<h2>Vebosity in mininet for inspecting</h2>
+<div class="highlight"><pre><span class="err">$</span> <span class="n">sudo</span> <span class="n">mn</span> <span class="o">-</span><span class="n">v</span> <span class="n">debug</span>
+<span class="err">$</span> <span class="n">sudo</span> <span class="n">mn</span> <span class="o">-</span><span class="n">v</span> <span class="n">output</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="nv">$ </span>tcpdump -n <span class="c">#Don&#39;t do the name resolution.</span>
+
+<span class="sb">```</span>bash
+mn&gt; iperf
+</pre></div>
+
+
+<div class="highlight"><pre>mn &gt; iperfudp
+</pre></div>
+
+
+<h2>Creating the customs topology in mininet.</h2>
+<div class="highlight"><pre><span class="sd">&quot;&quot;&quot;Custom topology example</span>
+
+<span class="sd">Two directly connected switches plus a host for each switch:</span>
+
+<span class="sd">   host --- switch --- switch --- host</span>
+
+<span class="sd">Adding the &#39;topos&#39; dict with a key/value pair to generate our newly defined</span>
+<span class="sd">topology enables one to pass in &#39;--topo=mytopo&#39; from the command line.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">mininet.topo</span> <span class="kn">import</span> <span class="n">Topo</span>
+
+<span class="k">class</span> <span class="nc">MyTopo</span><span class="p">(</span> <span class="n">Topo</span> <span class="p">):</span>
+    <span class="s">&quot;Simple topology example.&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="s">&quot;Create custom topo.&quot;</span>
+
+        <span class="c"># Initialize topology</span>
+        <span class="n">Topo</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+        <span class="c"># Add hosts and switches</span>
+        <span class="n">leftHost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addHost</span><span class="p">(</span> <span class="s">&#39;h1&#39;</span> <span class="p">)</span>
+        <span class="n">rightHost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addHost</span><span class="p">(</span> <span class="s">&#39;h2&#39;</span> <span class="p">)</span>
+        <span class="n">leftSwitch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addSwitch</span><span class="p">(</span> <span class="s">&#39;s3&#39;</span> <span class="p">)</span>
+        <span class="n">rightSwitch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addSwitch</span><span class="p">(</span> <span class="s">&#39;s4&#39;</span> <span class="p">)</span>
+
+        <span class="c"># Add links</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span> <span class="n">leftHost</span><span class="p">,</span> <span class="n">leftSwitch</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span> <span class="n">leftSwitch</span><span class="p">,</span> <span class="n">rightSwitch</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addLink</span><span class="p">(</span> <span class="n">rightSwitch</span><span class="p">,</span> <span class="n">rightHost</span> <span class="p">)</span>
+
+
+<span class="n">topos</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;mytopo&#39;</span><span class="p">:</span> <span class="p">(</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">MyTopo</span><span class="p">()</span> <span class="p">)</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>By default, the hosts start with randomly assigned mac address, this make debugging tough. to set the mac address small and unique, mininet provide the special options</p>
+<div class="highlight"><pre>sudo mn --mac
+</pre></div>
+
+
+<p>To open all the xterm windo for all nodes, just pass the -x flag to mn command as shown below</p>
+<div class="highlight"><pre><span class="nv">$ </span>sudo mn -x
+</pre></div>
+
+
+<p>To view the flow entries in the switch, we can use the dpctl commands in the xterm windows of the switches</p>
+<div class="highlight"><pre>switch<span class="nv">$ </span>dpctl dump-flows tcp:127.0.0.1:6634
+</pre></div>
+
+
+<p><code>dpctl</code> is the command line utility to get the information about the switch. we can query about other options that dpctl take using </p>
+<div class="highlight"><pre>mn&gt; dpctl --help
+</pre></div>
+
+
+<p>To check the time that take to setup and teardown the mininet topology is called mininet benchmarking, which can be done by using <code>test none</code> command</p>
+<div class="highlight"><pre><span class="nv">$ </span>sudo mn --test none
+</pre></div>
+
+
+<h3>Namespace in Mininet</h3>
+<p>By default in mininet <code>switch</code> and <code>Controller</code> are placed into the root name space, while hosts are kept into their own namespace.
+To change the namespace we can use the options --innamespace </p>
+<div class="highlight"><pre><span class="nv">$ </span>sudo mn --innamespace --switch user 
+</pre></div>
+
+
+<h3>Mininet CLI</h3>
+<h4>Running Python interpeter in mininet</h4>
+<div class="highlight"><pre><span class="err">$</span> <span class="n">sudo</span> <span class="n">many</span>
+<span class="n">mn</span><span class="o">&gt;</span> <span class="n">py</span> <span class="s">&#39;hello&#39;</span> <span class="o">+</span> <span class="s">&#39;world&#39;</span>
+<span class="n">mn</span><span class="o">&gt;</span> <span class="n">py</span> <span class="n">h1</span><span class="o">.</span><span class="n">IP</span><span class="p">()</span>
+<span class="n">mn</span><span class="o">&gt;</span> <span class="n">py</span> <span class="nb">locals</span> <span class="c">#Print the local variables.</span>
+</pre></div>
+
+
+<h2>Link Managing in mininet.</h2>
+<h3>Link up and down</h3>
+<div class="highlight"><pre>mn&gt; link s1 h1 down
+mn&gt; h1 ping h2 <span class="c">#This won&#39;t ping h2 as the link from h1 to h2 is down.</span>
+mn&gt; link h1 s1 up <span class="c">#This command will bring the link up.</span>
+mn&gt; xterm h1 h2 <span class="c">#This will open the xterm of two host h1 and h2, </span>
+</pre></div>
+
+
+<h2>Using Remote Controller in Mininet.</h2>
+<p>This will be useful if we are running the the controller in the remote machines, having customs controller, which can be floodlight, Opendaylight, Pox, Beacon, Ryu and many other controller of your choice.</p>
+<div class="highlight"><pre><span class="nv">$ </span>sudo mn --controller<span class="o">=</span>remote,ip<span class="o">=</span>192.168.1.1,port<span class="o">=</span>6633
+</pre></div>
+
+
+<h1>Terms</h1>
+<ul>
+<li><strong>Table miss</strong></li>
+<li>
+<p><strong>Packet In </strong> Message send by the switch to the controller</p>
+</li>
+<li>
+<p><strong> Flow table </strong> </p>
+</li>
+<li>
+<p><strong> Packet out message </strong> This message tell the switch what to do with this packet.</p>
+</li>
+<li>
+<p><strong> flow modification message </strong> 
+It instruct the switch to enter new entry flow table in the switch</p>
+</li>
+<li>
+<p><strong>Flow entry</strong>
+    have match fields to match the incomming packets, 
+    and also have further instruction.
+    flow intery given by the controller.
+    flow entry have the priority, </p>
+</li>
+<li>
+<p><strong> Flow table </strong> </p>
+</li>
+<li>
+<p><strong> Group table </strong>
+    special kind of flow table, consisit of the identifier and action buckets.
+    Action Bucket  --send out  ALL Ports 2,3,4,5</p>
+</li>
+<li>
+<p><strong> Openflow channel </strong> 
+        To connect for one or more controller. 
+        it communication setup, perodic health checking and many other.</p>
+</li>
+</ul>
+      </div>
+<!-- /.entry-content -->
+      <footer class="post-info text-muted">
+        <button type="button" class="btn btn-default">          
+          <a href="http://surfer2047.github.io/category/networking.html"><div class="fa fa-lg fa-folder-open"></div> Networking</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="http://surfer2047.github.io/tag/mininet.html"><div class="fa fa-lg fa-tag"></div> mininet</a>
+        </button>
+        <button type="button" class="btn btn-default">
+          <a href="http://surfer2047.github.io/tag/sdn.html"><div class="fa fa-lg fa-tag"></div> sdn</a>
+        </button>
+      </footer>
+      <!-- /.post-info -->
+    </section>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p class="footer-text">&copy; <a href="http://surfer2047.github.io">nixBlog</a> powered by <a href="http://getpelican.com/">pelican</a> and <a href="http://nodotcom.org">nikhil</a></p>
+      </div>
+    </footer>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  </body>
+</html>
