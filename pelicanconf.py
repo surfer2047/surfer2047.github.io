@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = u'@nix1947'
 SITENAME = u'nixBlog'
-SITEURL = ''
+SITEURL = 'http://surfer2047.github.io'
 
 PATH = 'content/blog'
 
@@ -31,6 +31,6 @@ SOCIAL = (('You can add links in your config file', '#'),
 
 DEFAULT_PAGINATION = 10
 
-THEME = 'iris'
+THEME = 'themes/nikhil'
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
